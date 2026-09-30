@@ -31,7 +31,7 @@ function valores(body) {
     String(nombre).trim(),
     edad === undefined || edad === null || edad === '' ? null : Number(edad),
     ocupacion || null,
-    experiencia || null,
+    experiencia || 'media',
     email || null,
   ];
 }
