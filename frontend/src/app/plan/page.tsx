@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Eye, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,11 +32,15 @@ export default function PlanPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados del modal de formulario
+  // Estados del modal de formulario (crear / editar)
   const [dialogOpen, setDialogOpen] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [planEditandoId, setPlanEditandoId] = useState<number | null>(null);
   const [guardando, setGuardando] = useState(false);
+
+  // Estados del modal de visualización de solo lectura
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [planVisualizando, setPlanVisualizando] = useState<PlanPrueba | null>(null);
 
   // Campos del formulario
   const [pruebaId, setPruebaId] = useState("");
@@ -101,6 +105,11 @@ export default function PlanPage() {
     setMetricas(plan.metricas ?? "");
     setGuionModeracion(plan.guion_moderacion ?? "");
     setDialogOpen(true);
+  };
+
+  const handleVer = (plan: PlanPrueba) => {
+    setPlanVisualizando(plan);
+    setViewDialogOpen(true);
   };
 
   const validarFormulario = (): boolean => {
@@ -207,11 +216,71 @@ export default function PlanPage() {
         </span>
       ),
     },
+    {
+      key: "ver",
+      header: "Detalle",
+      className: "w-[80px] text-center",
+      render: (plan) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleVer(plan)}
+          className="cursor-pointer gap-1.5 h-8 px-2.5 text-xs"
+        >
+          <Eye className="h-3.5 w-3.5" />
+          <span>Ver</span>
+        </Button>
+      ),
+    },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Estilos CSS globales para una impresión limpia */}
+      <style jsx global>{`
+        @media print {
+          aside,
+          nav,
+          header,
+          button,
+          .print\\:hidden {
+            display: none !important;
+          }
+          body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 12pt;
+          }
+          main {
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+          }
+          .print-area {
+            display: block !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          [role="dialog"] {
+            position: static !important;
+            max-height: none !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            width: 100% !important;
+          }
+          .dialog-overlay {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Planes de Prueba
@@ -226,34 +295,143 @@ export default function PlanPage() {
         </Button>
       </div>
 
-      {loading ? (
-        <LoadingState message="Cargando planes de prueba..." />
-      ) : error ? (
-        <ErrorState
-          title="Error al cargar planes"
-          message={error}
-          onRetry={cargarDatos}
-        />
-      ) : planes.length === 0 ? (
-        <EmptyState
-          title="No hay planes de prueba"
-          description="Aún no se ha registrado ningún plan de pruebas en el sistema."
-          action={
-            <Button onClick={handleNuevo} variant="outline" className="cursor-pointer">
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo plan
-            </Button>
-          }
-        />
-      ) : (
-        <DataTable
-          columns={columns}
-          data={planes}
-          onEdit={handleEditar}
-        />
-      )}
+      <div className="print:hidden">
+        {loading ? (
+          <LoadingState message="Cargando planes de prueba..." />
+        ) : error ? (
+          <ErrorState
+            title="Error al cargar planes"
+            message={error}
+            onRetry={cargarDatos}
+          />
+        ) : planes.length === 0 ? (
+          <EmptyState
+            title="No hay planes de prueba"
+            description="Aún no se ha registrado ningún plan de pruebas en el sistema."
+            action={
+              <Button onClick={handleNuevo} variant="outline" className="cursor-pointer">
+                <Plus className="mr-2 h-4 w-4" />
+                Nuevo plan
+              </Button>
+            }
+          />
+        ) : (
+          <DataTable
+            columns={columns}
+            data={planes}
+            onEdit={handleEditar}
+          />
+        )}
+      </div>
 
-      {/* Diálogo grande con formulario dividido en secciones */}
+      {/* Diálogo de visualización de solo lectura e impresión */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto print:max-h-none print:border-none print:shadow-none print-area">
+          {planVisualizando && (
+            <div className="space-y-6">
+              <DialogHeader className="border-b pb-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <DialogTitle className="text-xl font-bold">
+                      Plan de Pruebas: {planVisualizando.prueba_nombre || `Prueba #${planVisualizando.prueba_id}`}
+                    </DialogTitle>
+                    <DialogDescription className="mt-1 text-xs">
+                      {planVisualizando.metodo ? `Método: ${planVisualizando.metodo} • ` : ""}
+                      Fecha: {planVisualizando.created_at ? new Date(planVisualizando.created_at).toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" }) : "—"}
+                    </DialogDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.print()}
+                    className="cursor-pointer gap-2 print:hidden shrink-0"
+                  >
+                    <Printer className="h-4 w-4" />
+                    <span>Imprimir</span>
+                  </Button>
+                </div>
+              </DialogHeader>
+
+              {/* Secciones de contenido con whitespace-pre-wrap */}
+              <div className="space-y-6 text-sm text-foreground">
+                {planVisualizando.metodo && (
+                  <div className="space-y-1 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                    <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                      Método de Evaluación
+                    </h4>
+                    <p className="whitespace-pre-wrap leading-relaxed text-foreground font-medium">
+                      {planVisualizando.metodo}
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-1.5 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                    1. Objetivos de la Prueba
+                  </h4>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {planVisualizando.objetivos?.trim() || "No se registraron objetivos para este plan."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                    2. Perfil de Usuarios
+                  </h4>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {planVisualizando.perfil_usuarios?.trim() || "No se registró perfil de usuarios para este plan."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                    3. Tareas del Plan
+                  </h4>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {planVisualizando.tareas_plan?.trim() || "No se registraron tareas para este plan."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                    4. Métricas de Evaluación
+                  </h4>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {planVisualizando.metricas?.trim() || "No se registraron métricas para este plan."}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 rounded-lg border p-4 bg-muted/15 print:border-gray-300">
+                  <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground print:text-black">
+                    5. Guion de Moderación
+                  </h4>
+                  <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
+                    {planVisualizando.guion_moderacion?.trim() || "No se registró guion de moderación para este plan."}
+                  </p>
+                </div>
+              </div>
+
+              <DialogFooter className="print:hidden border-t pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewDialogOpen(false)}
+                >
+                  Cerrar
+                </Button>
+                <Button
+                  onClick={() => window.print()}
+                  className="gap-2"
+                >
+                  <Printer className="h-4 w-4" />
+                  Imprimir
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo grande con formulario dividido en secciones (crear / editar) */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
