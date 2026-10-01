@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DashboardCharts } from "@/components/DashboardCharts";
+import { DashboardTables } from "@/components/DashboardTables";
 import { getDashboardResumenMock } from "@/lib/dashboard-mock";
 import type { DashboardResumen } from "@/types";
 
@@ -207,6 +208,12 @@ export default function DashboardPage() {
       <DashboardCharts
         severidad={data.hallazgos_por_severidad}
         estado={data.hallazgos_por_estado}
+      />
+
+      {/* Tablas de Rendimiento por Tarea y Top Hallazgos */}
+      <DashboardTables
+        tareas={data.tareas}
+        topHallazgos={data.top_hallazgos}
       />
     </div>
   );
