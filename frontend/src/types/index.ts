@@ -33,8 +33,12 @@ export interface Observacion {
   participante_id: number;
   descripcion: string;
   completada: boolean;
-  tiempo_seg?: number;
+  tiempo_seg?: number | null;
   errores: number;
+  prueba_nombre?: string;
+  tarea_nombre?: string;
+  participante_nombre?: string;
+  created_at?: string;
 }
 
 export interface Hallazgo {
