@@ -52,6 +52,52 @@ export interface Hallazgo {
   severidad: Severidad;
   frecuencia: number;
   recomendacion?: string;
+  estado: "abierto" | "en_correccion" | "resuelto";
+}
+
+export interface DashboardTotales {
+  pruebas: number;
+  participantes: number;
+  observaciones: number;
+  hallazgos: number;
+}
+
+export interface DashboardSeveridad {
+  cosmetica: number;
+  menor: number;
+  mayor: number;
+  catastrofica: number;
+}
+
+export interface DashboardEstado {
+  abierto: number;
+  en_correccion: number;
+  resuelto: number;
+}
+
+export interface DashboardTarea {
+  titulo: string;
+  tasa_exito: number;
+  tiempo_promedio_seg: number;
+  errores_promedio: number;
+}
+
+export interface DashboardTopHallazgo {
+  id: number;
+  titulo: string;
+  severidad: Severidad;
+  frecuencia: number;
+}
+
+export interface DashboardResumen {
+  totales: DashboardTotales;
+  hallazgos_por_severidad: DashboardSeveridad;
+  hallazgos_por_estado: DashboardEstado;
+  tareas: DashboardTarea[];
+  top_hallazgos: DashboardTopHallazgo[];
+export interface PlanPrueba {
+  id: number;
+  prueba_id: number;
   estado: EstadoHallazgo;
   prueba_nombre?: string;
   observacion_descripcion?: string;
