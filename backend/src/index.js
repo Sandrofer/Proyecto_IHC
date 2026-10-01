@@ -19,7 +19,7 @@ app.get('/api/health', async (req, res, next) => {
 // app.use('/api/pruebas', require('./routes/pruebas'));
 app.use('/api/plan', require('./routes/plan'));
 app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/observaciones', require('./routes/observaciones'));
+app.use('/api/hallazgos', require('./routes/hallazgos'));
 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 app.use((err, req, res, next) => {
