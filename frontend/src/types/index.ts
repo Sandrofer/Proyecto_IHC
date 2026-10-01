@@ -37,6 +37,8 @@ export interface Observacion {
   errores: number;
 }
 
+export type EstadoHallazgo = "abierto" | "en_correccion" | "resuelto";
+
 export interface Hallazgo {
   id: number;
   prueba_id: number;
@@ -46,5 +48,8 @@ export interface Hallazgo {
   severidad: Severidad;
   frecuencia: number;
   recomendacion?: string;
-  estado: "abierto" | "en_correccion" | "resuelto";
+  estado: EstadoHallazgo;
+  prueba_nombre?: string;
+  observacion_descripcion?: string;
+  created_at?: string;
 }
