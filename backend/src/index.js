@@ -17,6 +17,7 @@ app.get('/api/health', async (req, res, next) => {
 
 // Cada quien registra aqui sus rutas, por ejemplo:
 // app.use('/api/pruebas', require('./routes/pruebas'));
+app.use('/api/plan', require('./routes/plan'));
 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 app.use((err, req, res, next) => {
