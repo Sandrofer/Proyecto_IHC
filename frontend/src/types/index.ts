@@ -33,8 +33,12 @@ export interface Observacion {
   participante_id: number;
   descripcion: string;
   completada: boolean;
-  tiempo_seg?: number;
+  tiempo_seg?: number | null;
   errores: number;
+  prueba_nombre?: string;
+  tarea_nombre?: string;
+  participante_nombre?: string;
+  created_at?: string;
 }
 
 export interface Hallazgo {
@@ -89,4 +93,15 @@ export interface DashboardResumen {
   hallazgos_por_estado: DashboardEstado;
   tareas: DashboardTarea[];
   top_hallazgos: DashboardTopHallazgo[];
+export interface PlanPrueba {
+  id: number;
+  prueba_id: number;
+  prueba_nombre?: string;
+  objetivos?: string | null;
+  perfil_usuarios?: string | null;
+  metodo?: string | null;
+  tareas_plan?: string | null;
+  metricas?: string | null;
+  guion_moderacion?: string | null;
+  created_at: string;
 }
