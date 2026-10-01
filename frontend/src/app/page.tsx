@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DashboardCharts } from "@/components/DashboardCharts";
 import { getDashboardResumenMock } from "@/lib/dashboard-mock";
 import type { DashboardResumen } from "@/types";
 
@@ -109,7 +110,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Dashboard de Usabilidad
@@ -201,6 +202,12 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Gráficos de Severidad y Estado */}
+      <DashboardCharts
+        severidad={data.hallazgos_por_severidad}
+        estado={data.hallazgos_por_estado}
+      />
     </div>
   );
 }
