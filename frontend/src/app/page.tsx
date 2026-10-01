@@ -1,8 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  RotateCcw,
+  FlaskConical,
+  Users,
+  Eye,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getDashboardResumenMock } from "@/lib/dashboard-mock";
 import type { DashboardResumen } from "@/types";
 
@@ -105,13 +119,87 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
-        <p className="text-sm font-medium text-muted-foreground">
-          Datos cargados correctamente desde el mock ({data.totales.pruebas} pruebas,{" "}
-          {data.totales.participantes} participantes,{" "}
-          {data.totales.observaciones} observaciones,{" "}
-          {data.totales.hallazgos} hallazgos).
-        </p>
+      {/* Tarjetas de Totales */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Pruebas */}
+        <Card className="shadow-xs transition-all hover:shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total de Pruebas
+            </CardTitle>
+            <div className="rounded-lg bg-blue-100 p-2 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+              <FlaskConical className="h-5 w-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight text-foreground">
+              {data.totales.pruebas}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Pruebas de usabilidad planificadas o ejecutadas
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Participantes */}
+        <Card className="shadow-xs transition-all hover:shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Participantes
+            </CardTitle>
+            <div className="rounded-lg bg-emerald-100 p-2 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+              <Users className="h-5 w-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight text-foreground">
+              {data.totales.participantes}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Usuarios evaluadores registrados en pruebas
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Observaciones */}
+        <Card className="shadow-xs transition-all hover:shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Observaciones
+            </CardTitle>
+            <div className="rounded-lg bg-indigo-100 p-2 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+              <Eye className="h-5 w-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight text-foreground">
+              {data.totales.observaciones}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Registros de comportamiento e interacción
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Hallazgos */}
+        <Card className="shadow-xs transition-all hover:shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Hallazgos
+            </CardTitle>
+            <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight text-foreground">
+              {data.totales.hallazgos}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Problemas y oportunidades detectadas
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
