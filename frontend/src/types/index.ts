@@ -41,6 +41,8 @@ export interface Observacion {
   created_at?: string;
 }
 
+export type EstadoHallazgo = "abierto" | "en_correccion" | "resuelto";
+
 export interface Hallazgo {
   id: number;
   prueba_id: number;
@@ -96,12 +98,8 @@ export interface DashboardResumen {
 export interface PlanPrueba {
   id: number;
   prueba_id: number;
+  estado: EstadoHallazgo;
   prueba_nombre?: string;
-  objetivos?: string | null;
-  perfil_usuarios?: string | null;
-  metodo?: string | null;
-  tareas_plan?: string | null;
-  metricas?: string | null;
-  guion_moderacion?: string | null;
-  created_at: string;
+  observacion_descripcion?: string;
+  created_at?: string;
 }
