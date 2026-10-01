@@ -1,3 +1,7 @@
+/**
+ * MOCK DE DATOS - SOLO PARA PRUEBAS Y DESARROLLO LOCAL
+ * Estructura de respuesta del endpoint GET /api/dashboard/resumen
+ */
 import type { DashboardResumen } from "@/types";
 
 export const DASHBOARD_MOCK: DashboardResumen = {

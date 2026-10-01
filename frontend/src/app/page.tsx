@@ -2,15 +2,11 @@
 
 import { useEffect, useState } from "react";
 import {
-  Loader2,
-  AlertCircle,
-  RotateCcw,
   FlaskConical,
   Users,
   Eye,
   AlertTriangle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,7 +15,8 @@ import {
 } from "@/components/ui/card";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { DashboardTables } from "@/components/DashboardTables";
-import { getDashboardResumenMock } from "@/lib/dashboard-mock";
+import { LoadingState, ErrorState } from "@/components/StateViews";
+import { api } from "@/lib/api";
 import type { DashboardResumen } from "@/types";
 
 export default function DashboardPage() {
@@ -30,7 +27,8 @@ export default function DashboardPage() {
   const cargarDashboard = () => {
     setLoading(true);
     setError(null);
-    getDashboardResumenMock()
+    api
+      .get<DashboardResumen>("/dashboard/resumen")
       .then((res) => {
         setData(res);
         setLoading(false);
@@ -47,7 +45,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let cancel = false;
-    getDashboardResumenMock()
+    api
+      .get<DashboardResumen>("/dashboard/resumen")
       .then((res) => {
         if (!cancel) {
           setData(res);
@@ -72,40 +71,21 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div
-        className="flex min-h-[400px] flex-col items-center justify-center gap-3 text-muted-foreground"
-        role="status"
-        aria-live="polite"
-      >
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm font-medium">Cargando métricas del dashboard...</p>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <LoadingState message="Cargando métricas del dashboard..." />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div
-        className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-red-200 bg-red-50/50 p-8 text-center dark:border-red-900/50 dark:bg-red-950/20"
-        role="alert"
-      >
-        <div className="rounded-full bg-red-100 p-3 text-red-600 dark:bg-red-900/40 dark:text-red-400">
-          <AlertCircle className="h-8 w-8" />
-        </div>
-        <h3 className="mt-3 text-base font-semibold text-red-700 dark:text-red-400">
-          Error al cargar el Dashboard
-        </h3>
-        <p className="mt-1 text-sm text-red-600/90 dark:text-red-300">
-          {error ?? "No se recibieron datos"}
-        </p>
-        <Button
-          onClick={cargarDashboard}
-          variant="outline"
-          className="mt-4 gap-2 cursor-pointer border-red-300 text-red-700 hover:bg-red-100 dark:border-red-800 dark:text-red-300"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reintentar
-        </Button>
+      <div className="flex min-h-[300px] items-center justify-center">
+        <ErrorState
+          title="Error al cargar el Dashboard"
+          message={error ?? "No se pudieron obtener los datos del servidor"}
+          onRetry={cargarDashboard}
+          retryText="Reintentar"
+        />
       </div>
     );
   }
