@@ -48,3 +48,16 @@ export interface Hallazgo {
   recomendacion?: string;
   estado: "abierto" | "en_correccion" | "resuelto";
 }
+
+export interface PlanPrueba {
+  id: number;
+  prueba_id: number;
+  prueba_nombre?: string;
+  objetivos?: string | null;
+  perfil_usuarios?: string | null;
+  metodo?: string | null;
+  tareas_plan?: string | null;
+  metricas?: string | null;
+  guion_moderacion?: string | null;
+  created_at: string;
+}
