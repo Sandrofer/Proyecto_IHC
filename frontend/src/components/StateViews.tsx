@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Loader2, Inbox, AlertCircle, RotateCcw } from "lucide-react";
 
