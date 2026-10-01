@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { DataTable, type Column } from "@/components/DataTable";
 import { FormField } from "@/components/FormField";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { LoadingState, EmptyState, ErrorState } from "@/components/StateViews";
 import { api } from "@/lib/api";
 import type { PlanPrueba, Prueba } from "@/types";
@@ -41,6 +42,11 @@ export default function PlanPage() {
   // Estados del modal de visualización de solo lectura
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [planVisualizando, setPlanVisualizando] = useState<PlanPrueba | null>(null);
+
+  // Estados del diálogo de confirmación para eliminar
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [planAEliminar, setPlanAEliminar] = useState<PlanPrueba | null>(null);
+  const [eliminando, setEliminando] = useState(false);
 
   // Campos del formulario
   const [pruebaId, setPruebaId] = useState("");
@@ -110,6 +116,29 @@ export default function PlanPage() {
   const handleVer = (plan: PlanPrueba) => {
     setPlanVisualizando(plan);
     setViewDialogOpen(true);
+  };
+
+  const handlePedirEliminar = (plan: PlanPrueba) => {
+    setPlanAEliminar(plan);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmarEliminar = async () => {
+    if (!planAEliminar) return;
+    try {
+      setEliminando(true);
+      await api.del(`/plan/${planAEliminar.id}`);
+      toast.success("Plan de pruebas eliminado con éxito");
+      setConfirmOpen(false);
+      setPlanAEliminar(null);
+      cargarDatos();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Error al eliminar el plan"
+      );
+    } finally {
+      setEliminando(false);
+    }
   };
 
   const validarFormulario = (): boolean => {
@@ -320,6 +349,7 @@ export default function PlanPage() {
             columns={columns}
             data={planes}
             onEdit={handleEditar}
+            onDelete={handlePedirEliminar}
           />
         )}
       </div>
@@ -612,6 +642,17 @@ export default function PlanPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Diálogo de confirmación para eliminar */}
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="¿Eliminar plan de pruebas?"
+        description={`¿Estás seguro de que deseas eliminar el plan para la prueba "${planAEliminar?.prueba_nombre || `Prueba #${planAEliminar?.prueba_id || ""}`}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        loading={eliminando}
+        onConfirm={handleConfirmarEliminar}
+      />
     </div>
   );
 }
